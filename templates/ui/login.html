@@ -1,0 +1,35 @@
+{% extends "ui/base.html" %}
+{% block content %}
+  <h2>Login</h2>
+  <form id="form">
+    <label>Email <input type="email" id="email" required></label>
+    <label>Password <input type="password" id="password" required></label>
+    <button type="submit">Login</button>
+  </form>
+  <div id="out"></div>
+  <div class="card">
+    <small>On success the server sets an HttpOnly <code>auth_token</code> cookie.
+    JS cannot read it (by design), but the browser will send it automatically on same-origin requests.</small>
+  </div>
+{% endblock %}
+{% block page_js %}
+<script>
+  const form = document.getElementById('form');
+  const out = document.getElementById('out');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      const data = await apiFetch('/api/login/', {
+        method: 'POST',
+        body: { email: email.value.trim().toLowerCase(), password: password.value }
+      });
+      showStatus(out, data.detail || 'Logged in.');
+    } catch (err) {
+      showStatus(out, err.message, false);
+    }
+  });
+</script>
+{% endblock %}
+
+
+

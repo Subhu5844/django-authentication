@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Swagger UI</title>
+  <link rel="stylesheet" type="text/css"
+        href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+<script>
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  const ui = SwaggerUIBundle({
+    url: "/schema/",
+    dom_id: "#swagger-ui",
+    presets: [SwaggerUIBundle.presets.apis],
+    requestInterceptor: (req) => {
+      // Add CSRF header for non-GET requests
+      if (req.method && req.method.toUpperCase() !== "GET") {
+        const token = getCookie("csrftoken");
+        if (token) {
+          req.headers["X-CSRFToken"] = token;
+        }
+      }
+      return req;
+    }
+  });
+</script>
+</body>
+</html>

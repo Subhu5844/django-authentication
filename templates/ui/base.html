@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Auth Cookie UI</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+    nav a { margin-right: 1rem; }
+    form { margin: 1rem 0; max-width: 420px; }
+    label { display:block; margin-top: .5rem; }
+    input { width: 100%; padding: .5rem; margin-top: .25rem; }
+    button { padding: .5rem .8rem; margin-top: .75rem; }
+    .card { padding: 1rem; border: 1px solid #ddd; border-radius: .5rem; margin-top: 1rem; }
+    .ok { color: #116611; }
+    .err { color: #9b0000; }
+    pre { background:#f7f7f7; padding: .75rem; overflow:auto; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/ui/register">Register</a>
+    <a href="/ui/register/verify">Verify</a>
+    <a href="/ui/login">Login</a>
+    <a href="/ui/me">My Details</a>
+    <a href="/ui/logout">Logout</a>
+    <a href="/swagger/">Swagger</a>
+  </nav>
+  <hr/>
+
+  {% block content %}{% endblock %}
+
+  <script>
+    // --- CSRF utilities + fetch wrapper ---
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    async function apiFetch(url, {method='GET', body} = {}) {
+      const init = {
+        method,
+        credentials: 'same-origin', // include cookies for this origin
+        headers: {}
+      };
+      if (method.toUpperCase() !== 'GET') {
+        init.headers['Content-Type'] = 'application/json';
+        const csrftoken = getCookie('csrftoken');
+        if (csrftoken) init.headers['X-CSRFToken'] = csrftoken;
+        if (body !== undefined) init.body = JSON.stringify(body);
+      }
+      const res = await fetch(url, init);
+      let data = null;
+      try { data = await res.json(); } catch(e) {}
+      if (!res.ok) {
+        const detail = (data && (data.detail || JSON.stringify(data))) || `HTTP ${res.status}`;
+        throw new Error(detail);
+      }
+      return data;
+    }
+
+    function showStatus(el, msg, ok=true) {
+      el.innerHTML = `<div class="card ${ok ? 'ok' : 'err'}">${msg}</div>`;
+    }
+
+    function showJson(el, obj) {
+      el.innerHTML = `<div class="card"><pre>${JSON.stringify(obj, null, 2)}</pre></div>`;
+    }
+  </script>
+  {% block page_js %}{% endblock %}
+</body>
+</html>
+
+
+

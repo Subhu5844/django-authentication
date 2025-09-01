@@ -1,0 +1,30 @@
+{% extends "ui/base.html" %}
+{% block content %}
+  <h2>Register</h2>
+  <form id="form">
+    <label>Email <input type="email" id="email" required></label>
+    <label>Password <input type="password" id="password" minlength="8" required></label>
+    <button type="submit">Register</button>
+  </form>
+  <div id="out"></div>
+{% endblock %}
+{% block page_js %}
+<script>
+  const form = document.getElementById('form');
+  const out = document.getElementById('out');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      const data = await apiFetch('/api/register/', {
+        method: 'POST',
+        body: { email: email.value.trim().toLowerCase(), password: password.value }
+      });
+      showStatus(out, data.detail || 'OTP sent to email.');
+    } catch (err) {
+      showStatus(out, err.message, false);
+    }
+  });
+</script>
+{% endblock %}
+
+

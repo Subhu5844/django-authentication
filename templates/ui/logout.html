@@ -1,0 +1,28 @@
+{% extends "ui/base.html" %}
+{% block content %}
+  <h2>Logout</h2>
+  <button id="btn">Logout</button>
+  <div id="out"></div>
+{% endblock %}
+{% block page_js %}
+<script>
+  const btn = document.getElementById('btn');
+  const out = document.getElementById('out');
+  btn.addEventListener('click', async () => {
+    try {
+      const data = await apiFetch('/api/logout/', { method: 'POST', body: {} });
+      showStatus(out, data.detail || 'Logged out.');
+    } catch (err) {
+      showStatus(out, err.message, false);
+    }
+  });
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+

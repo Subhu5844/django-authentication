@@ -1,0 +1,13 @@
+{% extends "ui/base.html" %}
+{% block content %}
+  <h2>Welcome</h2>
+  <p>This is a minimal UI to test your cookie-based auth flow.</p>
+  <ol>
+    <li>Register with email & password → you’ll receive an OTP (check SMTP or console).</li>
+    <li>Verify with your email + the OTP.</li>
+    <li>Login with email + password (server sets <code>auth_token</code> HttpOnly cookie).</li>
+    <li>Open “My Details” to hit <code>/api/me/</code> (must be authenticated).</li>
+    <li>Logout to clear the cookie + invalidate the server token.</li>
+  </ol>
+{% endblock %}
+
